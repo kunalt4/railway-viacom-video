@@ -161,7 +161,7 @@ public class ListVideoActivity extends AppCompatActivity
 
                 String message =  parent.getAdapter().getItem(position).toString();
                 String link = video_list_links[position];
-                Intent intent = new Intent(ListVideoActivity.this,VideoPlayerActicity.class);
+                Intent intent = new Intent(ListVideoActivity.this,VideoPlayerActivity.class);
                 intent.putExtra("LINK",link);
                 startActivity(intent);
 
