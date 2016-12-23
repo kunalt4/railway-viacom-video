@@ -5,6 +5,8 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -32,8 +34,14 @@ import java.net.URL;
 public class ListVideoActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    ListView listView;
-    public String[] video_list_name,video_list_links,video_list_ratings,video_list;
+
+    public RecyclerView recyclerView;
+    private RecyclerView.LayoutManager layoutManager;
+    private RecyclerView.Adapter adapter;
+
+    private Config config;
+
+    //public String[] video_list_name,video_list_links,video_list_ratings,video_list;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +63,15 @@ public class ListVideoActivity extends AppCompatActivity
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        recyclerView.setHasFixedSize(true);
+
+        layoutManager = new LinearLayoutManager(this);
+
+        recyclerView.setLayoutManager(layoutManager);
+
         getJSON();
+
     }
 
     @Override
@@ -108,7 +124,8 @@ public class ListVideoActivity extends AppCompatActivity
 
                 Log.d("DATA----------->",s);
                 parseJSON(s);
-                showData();
+                ;
+
             }
 
             @Override
@@ -150,30 +167,45 @@ public class ListVideoActivity extends AppCompatActivity
     public void showData(){
 
 
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-                android.R.layout.simple_list_item_1, video_list_name);
-        listView = (ListView) findViewById(R.id.list_videos);
-        listView.setAdapter(adapter);
-
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                String message =  parent.getAdapter().getItem(position).toString();
-                String link = video_list_links[position];
-                Intent intent = new Intent(ListVideoActivity.this,VideoPlayerActivity.class);
-                intent.putExtra("LINK",link);
-                startActivity(intent);
+        adapter = new CardAdapter(ListVideoActivity.this, Config.names,Config.ratings, Config.bitmaps, Config.links);
+        ItemClickSupport.addTo(recyclerView, ListVideoActivity.this)
+                .setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
+                    @Override
+                    public void onItemClicked(RecyclerView recyclerView, int position, View v) {
+                        // do it
+                    }
+                });
+        recyclerView.setAdapter(adapter);
 
 
 
-                Log.d("IN check",link);
 
-
-            }
-        });
+//        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
+//                android.R.layout.simple_list_item_1, video_list_name);
+//        listView = (ListView) findViewById(R.id.list_videos);
+//        listView.setAdapter(adapter);
+//
+//        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//            @Override
+//            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//
+//                String message =  parent.getAdapter().getItem(position).toString();
+//                String link = video_list_links[position];
+//                Intent intent = new Intent(ListVideoActivity.this,VideoPlayerActivity.class);
+//                intent.putExtra("LINK",link);
+//                startActivity(intent);
+//
+//
+//
+//                Log.d("IN check",link);
+//
+//
+//            }
+//        });
 
     }
+
+
 
 
     private void parseJSON(String json){
@@ -182,17 +214,25 @@ public class ListVideoActivity extends AppCompatActivity
 
             JSONArray jsonArray = new JSONArray(json);
             Log.d("JSONARRAY",jsonArray+"");
-            video_list_name = new String[jsonArray.length()];
-            video_list_links = new String[jsonArray.length()];
-            video_list_ratings = new String[jsonArray.length()];
+//            video_list_name = new String[jsonArray.length()];
+//            video_list_links = new String[jsonArray.length()];
+//            video_list_ratings = new String[jsonArray.length()];
+
+            config = new Config(jsonArray.length());
+
             for(int i=0; i<jsonArray.length(); i++){
                 JSONObject k = jsonArray.getJSONObject(i);
 
-                video_list_name[i] = getName(k);
-                video_list_links[i] = getLink(k);
-                video_list_ratings[i] = getRating(k);
+                Config.names[i] = getName(k);
+                Config.links[i] = getLink(k);
+                Config.ratings[i] = getRating(k);
 
             }
+
+
+            GetBitmap gb = new GetBitmap(this,this, Config.links);
+            gb.execute();
+
 
         } catch (JSONException e) {
             e.printStackTrace();
@@ -257,3 +297,5 @@ public class ListVideoActivity extends AppCompatActivity
         return true;
     }
 }
+
+

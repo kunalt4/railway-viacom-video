@@ -332,7 +332,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements HlsSampleS
                     }
 
                     if(currentTrackIndex == 1){
-                        
+
                         btn_fwd.setVisibility(View.VISIBLE);
                         btn_rev.setVisibility(View.VISIBLE);
                         blockSeekbar = false;
