@@ -140,7 +140,8 @@ public class VideoPlayerActivity extends AppCompatActivity implements HlsSampleS
         private ImageView volIcon, brightnessIcon, vol_image, brightness_image;
         private int brightness, mediavolume,device_height,device_width;
         private AudioManager audioManager;
-        private String link_vid="";
+        private String link_vid="", vid_name="", adv_link="";
+        int totalLinks;
 
 
         private final SessionManagerListener<CastSession> mSessionManagerListener = new SessionManagerListenerImpl();
@@ -314,7 +315,7 @@ public class VideoPlayerActivity extends AppCompatActivity implements HlsSampleS
                             TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(player.getCurrentPosition()));
                     Long mins = TimeUnit.MILLISECONDS.toMinutes(player.getCurrentPosition());
 
-                    if(currentTrackIndex == 0 && mins == 0){
+                    if(currentTrackIndex == 0 && mins == 0 && totalLinks == 2){
 
                         if(secs <= 10){
                             btn_next.setVisibility(View.INVISIBLE);
@@ -554,6 +555,14 @@ public class VideoPlayerActivity extends AppCompatActivity implements HlsSampleS
 
             Intent intent = getIntent();
             link_vid = intent.getStringExtra("LINK");
+            vid_name = intent.getStringExtra("VIDNAME");
+
+            adv_link = intent.getStringExtra("ADVERTISEMENT");
+            if(adv_link == null){
+                totalLinks = 1;
+            }
+            else
+                totalLinks = 2;
 
             display = getWindowManager().getDefaultDisplay();
             size = new Point();
@@ -679,10 +688,21 @@ public class VideoPlayerActivity extends AppCompatActivity implements HlsSampleS
 
             currentTrackIndex=0;
 
-            video_type = new String[]{"hls", "others"};
-            video_url = new String[]{"http://player.hungama.com/mp3/91508493.mp4",link_vid};
-            Log.d("VIDEO_URL--",video_url[currentTrackIndex]);
-            video_title = new String[]{"Movie Trailer","Sherlock"};
+            if(totalLinks == 1){
+                video_type = new String[]{"others"};
+                video_url = new String[]{link_vid};
+                Log.d("VIDEO_URL--",video_url[currentTrackIndex]);
+                video_title = new String[]{vid_name};
+            }
+
+            else {
+                video_type = new String[]{"hls", "others"};
+                video_url = new String[]{adv_link,link_vid};
+                Log.d("VIDEO_URL--",video_url[currentTrackIndex]);
+                video_title = new String[]{"Advertisement",vid_name};
+            }
+
+
 
             txt_title.setText(video_title[currentTrackIndex]);
 

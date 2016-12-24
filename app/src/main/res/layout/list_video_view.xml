@@ -36,16 +36,18 @@
                 android:textStyle="bold"
                 android:text="NAME"
                 android:id="@+id/textViewName"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="10dp"/>
+                android:layout_alignParentLeft="true"
+                android:layout_marginTop="10dp"
+                android:layout_marginLeft="100dp"/>
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="RATING"
                 android:id="@+id/textViewRating"
+                android:layout_alignParentLeft="true"
+                android:layout_marginLeft="100dp"
                 android:layout_below="@+id/textViewName"
-                android:layout_centerHorizontal="true"
                 android:layout_marginTop="13dp" />
 
 

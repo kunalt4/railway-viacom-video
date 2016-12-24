@@ -27,6 +27,8 @@ public class ItemClickSupport {
                 Log.d("ITEMCLICKED",holder.getAdapterPosition()+"");
                 Intent intent = new Intent(mcon,VideoPlayerActivity.class);
                 intent.putExtra("LINK",Config.links[holder.getAdapterPosition()]);
+                intent.putExtra("ADVERTISEMENT","http://distribution.bbb3d.renderfarming.net/video/mp4/bbb_sunflower_1080p_60fps_normal.mp4");
+                intent.putExtra("VIDNAME",Config.names[holder.getAdapterPosition()]);
                 mcon.startActivity(intent);
             }
         }
