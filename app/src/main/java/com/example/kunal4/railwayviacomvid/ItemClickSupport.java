@@ -16,6 +16,7 @@ public class ItemClickSupport {
     private OnItemClickListener mOnItemClickListener;
     private OnItemLongClickListener mOnItemLongClickListener;
     private static Context mcon;
+    private CardAdapter madapter;
     private View.OnClickListener mOnClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -26,9 +27,10 @@ public class ItemClickSupport {
                 mOnItemClickListener.onItemClicked(mRecyclerView, holder.getAdapterPosition(), v);
                 Log.d("ITEMCLICKED",holder.getAdapterPosition()+"");
                 Intent intent = new Intent(mcon,VideoPlayerActivity.class);
-                intent.putExtra("LINK",Config.links[holder.getAdapterPosition()]);
+                intent.putExtra("LINK", madapter.items.get(holder.getAdapterPosition()).getLink());
+                Log.d("LINKKKK",madapter.items.get(holder.getAdapterPosition()).getLink());
                 intent.putExtra("ADVERTISEMENT","http://distribution.bbb3d.renderfarming.net/video/mp4/bbb_sunflower_1080p_60fps_normal.mp4");
-                intent.putExtra("VIDNAME",Config.names[holder.getAdapterPosition()]);
+                intent.putExtra("VIDNAME",madapter.items.get(holder.getAdapterPosition()).getName());
                 mcon.startActivity(intent);
             }
         }
@@ -62,23 +64,23 @@ public class ItemClickSupport {
         }
     };
 
-    private ItemClickSupport(RecyclerView recyclerView, Context con) {
+    private ItemClickSupport(RecyclerView recyclerView, Context con, CardAdapter adapter) {
         mRecyclerView = recyclerView;
         // the ID must be declared in XML, used to avoid
         // replacing the ItemClickSupport without removing
         // the old one from the RecyclerView
         mcon = con;
+        madapter = adapter;
         mRecyclerView.setTag(R.id.item_click_support, this);
         mRecyclerView.addOnChildAttachStateChangeListener(mAttachListener);
     }
 
-    public static ItemClickSupport addTo(RecyclerView view, Context con) {
+    public static ItemClickSupport addTo(RecyclerView view, Context con, CardAdapter adapter) {
         // if there's already an ItemClickSupport attached
         // to this RecyclerView do not replace it, use it
-
         ItemClickSupport support = (ItemClickSupport) view.getTag(R.id.item_click_support);
         if (support == null) {
-            support = new ItemClickSupport(view,con);
+            support = new ItemClickSupport(view,con,adapter);
             mcon = con;
         }
         return support;

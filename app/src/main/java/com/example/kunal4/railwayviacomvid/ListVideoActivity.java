@@ -5,8 +5,10 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -32,12 +34,13 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class ListVideoActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, SearchView.OnQueryTextListener {
 
 
     public RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
-    private RecyclerView.Adapter adapter;
+    private CardAdapter adapter;
+    MyFilter filter;
 
     private Config config;
 
@@ -59,6 +62,7 @@ public class ListVideoActivity extends AppCompatActivity
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
+
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
@@ -88,6 +92,14 @@ public class ListVideoActivity extends AppCompatActivity
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.list_video, menu);
+
+        getMenuInflater().inflate(R.menu.main_menu, menu);
+
+        final MenuItem searchItem = menu.findItem(R.id.action_search);
+        final SearchView searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
+        searchView.setOnQueryTextListener(this);
+
+
         return true;
     }
 
@@ -168,7 +180,7 @@ public class ListVideoActivity extends AppCompatActivity
 
 
         adapter = new CardAdapter(ListVideoActivity.this, Config.names,Config.ratings, Config.bitmaps, Config.links);
-        ItemClickSupport.addTo(recyclerView, ListVideoActivity.this)
+        ItemClickSupport.addTo(recyclerView, ListVideoActivity.this,adapter)
                 .setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
                     @Override
                     public void onItemClicked(RecyclerView recyclerView, int position, View v) {
@@ -267,6 +279,21 @@ public class ListVideoActivity extends AppCompatActivity
             e.printStackTrace();
         }
         return category;
+    }
+
+
+
+    @Override
+    public boolean onQueryTextChange(String query) {
+        adapter.filterList(query);
+
+        // Here is where we are going to implement the filter logic
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        return false;
     }
 
 
